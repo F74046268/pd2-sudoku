@@ -321,7 +321,7 @@ cout<<"input n must be 0 or 1"<<endl;
 
 void Sudoku::transform(){
 int i,j;
-	readIn();
+
 	cout<<endl<<endl;
 	changeRow(1,2);
 	flip(1);
