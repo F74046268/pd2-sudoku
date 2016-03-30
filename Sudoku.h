@@ -16,6 +16,7 @@ class Sudoku{
 	private:
 		int map[sudokuSize][sudokuSize];
 		bool checkUnity(int *unity, int a, int b);
+		void checkPossible(int row, int column);
 		bool Validable();
 		void back(int &i, int &j);
 		void getFirst(int &i, int &j);
@@ -23,4 +24,6 @@ class Sudoku{
 		int arr[9][9];
 		int unity[9];
 		int temp[9][9];
+		int map2[9][9];
+		bool possible[9][9][9];
 };

@@ -27,7 +27,7 @@ void Sudoku::setQuestion(int *map){
 }
 
 void Sudoku::readIn(){
-	int i,j;
+	int i,j,k;
 	for(i=0;i<9;i++)
 	{
 		for(j=0;j<9;j++)
@@ -38,46 +38,71 @@ void Sudoku::readIn(){
 			if(arr[i][j]>0){temp[i][j]=1;}
 		}
 	}
-	
-	
-/*	for(i=0;i<9;i++)
+
+	for(k=0;k<9;k++)
 	{
-		for(j=0;j<9;j++)
+		for(i=0;i<9;i++)
 		{
-			arr[i][j]=map[i][j];
+			for(j=0;j<9;j++)
+			{
+				possible[i][j][k]=1;
+			}
 		}
 	}
 
-	for(i=0;i<9;i++){if(i==2||i==3)continue;cin>>arr[0][i];}
-	for(i=0;i<9;i++){if(i==0||i==7)continue;cin>>arr[1][i];}
-	for(i=0;i<9;i++){if(i==1||i==4||i==6)continue;cin>>arr[2][i];}
-	for(i=0;i<9;i++){if(i==0||i==5||i==6)continue;cin>>arr[3][i];}
-	for(i=0;i<9;i++){if(i==1||i==4||i==8)continue;cin>>arr[4][i];}
-	for(i=0;i<9;i++){if(i==2||i==3||i==7)continue;cin>>arr[5][i];}
-	for(i=0;i<9;i++){if(i==1||i==3||i==8)continue;cin>>arr[6][i];}
-	for(i=0;i<9;i++){if(i==2||i==7)continue;cin>>arr[7][i];}
-	for(i=0;i<9;i++){if(i==5||i==6)continue;cin>>arr[8][i];}
-*/	
 }
 
 void Sudoku::solve(){
-int i=0,j=0,judge=1,count=0,sum=0;
+int i=0,j=0,k=0,count=0,sum=0;
 	if(Validable()==0){cout<<0<<endl;return;} //check the question is correct or not
-/*	for(i=0;i<9;i++)						
+	
+	for(i=0;i<9;i++)					//find all possible
 	{
 		for(j=0;j<9;j++)
-		{
-			if(temp[i][j]==1)count++;
-
-		}
+			{
+					checkPossible(i,j);
+			}
 	}
-*/
-//	if(count<17){cout<<0<<endl;return;}		//if the numbers in question<17,unsolvable
-									
+
+	for(k=0;k<9;k++)
+	{
+		count=0;
+		for(i=0;i<3;i++)
+		{
+			for(j=0;j<3;j++)
+			{
+				if(possible[i][j][k]==true)count++;
+			}
+		}
+		if(count==0){cout<<0<<endl;return;}
+		
+		count=0;
+		for(i=3;i<6;i++)
+		{
+			for(j=3;j<6;j++)
+			{
+				if(possible[i][j][k]==true)count++;
+			}
+		}
+		if(count==0){cout<<0<<endl;return;}
+
+		count=0;
+		for(i=6;i<9;i++)
+		{
+			for(j=6;j<9;j++)
+			{
+				if(possible[i][j][k]==true)count++;
+			}
+		}
+		if(count==0){cout<<0<<endl;return;}
+
+
+	
+	}
+								
 	getFirst(i,j);						//find the solution
 	do{
-		count++	;
-//	if(count>140000000){cout<<0<<endl;return;}
+
 	
 		arr[i][j]++;
 		
@@ -110,7 +135,7 @@ int i=0,j=0,judge=1,count=0,sum=0;
 		}
 	}while((i*9+j)>=0&&(i*9+j)<81&&sum<2);
 	
-	cout<<count<<endl;
+	
 
 	if(sum==1)
 	{
@@ -127,28 +152,6 @@ int i=0,j=0,judge=1,count=0,sum=0;
 	else if(sum>1)
 	{
 		cout<<sum<<endl;
-		for(i=0;i<9;i++)					//print out answer
-		{
-			for(j=0;j<9;j++)
-			{
-				cout<<map[i][j]<<" ";
-			}
-			cout<<endl;
-		}
-
-	}
-	else if(sum==0)
-	{
-		cout<<0<<endl;
-		for(i=0;i<9;i++)					//print out answer
-		{
-			for(j=0;j<9;j++)
-			{
-				cout<<map[i][j]<<" ";
-			}
-			cout<<endl;
-		}
-
 	}
 }
 
@@ -217,8 +220,36 @@ int a=i,b=j-1;
 	i=0,j=-1;return ;
 }
 
+void Sudoku::checkPossible(int row, int column){		//all possibility set to true
+	int i,j;
+		if(map[row][column])      //if map have had answer,then possible will just has 1
+		{
+			for(i=0;i<9;i++)
+			{
+				possible[row][column][i]=false;
+			}
+			possible[row][column][map[row][column]-1]=true;
+			return;
+		}
 
+		for(j=0;j<9;j++)		//compute row possible
+		{
+			if(map[row][j]){possible[row][column][map[row][j]-1]=false;}
+		}
 
+		for(i=0;i<9;i++)		//compute column possible
+		{
+			if(map[i][column]){possible[row][column][map[i][column]-1]=false;}
+		}	
+																													
+		for(i=0;i<3;i++)     //compute cell possible
+		{
+			for(j=0;j<3;j++)
+			{
+				if(map[row-(row%3)+i][column-(column%3)+j]){possible[row][column][map[row-(row%3)+i][column-(column%3)+j]-1]=false;}
+			}
+		}
+}
 
 bool Sudoku::checkUnity(int *unity, int a, int b){     
 int i=a,j=b,k;
