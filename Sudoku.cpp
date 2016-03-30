@@ -172,6 +172,11 @@ int i=0,j=0,k=0,count=0,sum=0;
 	{
 		cout<<sum<<endl;
 	}
+	else if(sum<1)
+	{
+		cout<<0<<endl;
+	}
+	
 }
 
 void Sudoku::changeNum(int a, int b){
