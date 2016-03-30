@@ -34,6 +34,7 @@ void Sudoku::readIn(){
 		{
 			cin>>arr[i][j];
 			temp[i][j]=arr[i][j];
+			map[i][j]=arr[i][j];
 			if(arr[i][j]>0){temp[i][j]=1;}
 		}
 	}
@@ -60,31 +61,95 @@ void Sudoku::readIn(){
 }
 
 void Sudoku::solve(){
-int i=0,j=0,judge=1;
-									
-	getFirst(i,j);						//find the solution
-	do{
-		cout<<"hellooooooooooooooooooo"<<endl;	
-		arr[i][j]++;
-		if(arr[i][j]>9)
-		{
-			arr[i][j]=0;
-			back(i,j);
-		}
-		else if(checkUnity(unity,i,j)==1)
-		judge=getNext(i,j);
-	}while(judge);
-	
-
-	for(i=0;i<9;i++)
+int i=0,j=0,judge=1,count=0,sum=0;
+	if(Validable()==0){cout<<0<<endl;return;} //check the question is correct or not
+/*	for(i=0;i<9;i++)						
 	{
 		for(j=0;j<9;j++)
 		{
-			cout<<arr[i][j]<<" ";
-		}
-		cout<<endl;
-	}
+			if(temp[i][j]==1)count++;
 
+		}
+	}
+*/
+//	if(count<17){cout<<0<<endl;return;}		//if the numbers in question<17,unsolvable
+									
+	getFirst(i,j);						//find the solution
+	do{
+		count++	;
+//	if(count>140000000){cout<<0<<endl;return;}
+	
+		arr[i][j]++;
+		
+		
+		if(arr[i][j]>9)
+		{
+		
+			arr[i][j]=0;
+			back(i,j);
+			
+		}
+		else if(checkUnity(unity,i,j)==1)
+		{
+			
+			getNext(i,j);
+	
+			if((i*9+j)==81)
+			{
+				for(i=0;i<9;i++)
+				{
+					for(j=0;j<9;j++)
+					{
+						map[i][j]=arr[i][j];
+					}
+				}
+				i=8,j=9;
+				sum++;
+				back(i,j);
+			}
+		}
+	}while((i*9+j)>=0&&(i*9+j)<81&&sum<2);
+	
+	cout<<count<<endl;
+
+	if(sum==1)
+	{
+		cout<<sum<<endl;
+		for(i=0;i<9;i++)					//print out answer
+		{
+			for(j=0;j<9;j++)
+			{
+				cout<<map[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+	}
+	else if(sum>1)
+	{
+		cout<<sum<<endl;
+		for(i=0;i<9;i++)					//print out answer
+		{
+			for(j=0;j<9;j++)
+			{
+				cout<<map[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+
+	}
+	else if(sum==0)
+	{
+		cout<<0<<endl;
+		for(i=0;i<9;i++)					//print out answer
+		{
+			for(j=0;j<9;j++)
+			{
+				cout<<map[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+
+	}
 }
 
 void Sudoku::changeNum(){
@@ -118,22 +183,26 @@ void Sudoku::getFirst(int &i, int &j){		//find the first blank to solve
 	}
 }
 
-bool Sudoku::getNext(int &i, int &j){		//find the next blank to solve
+void Sudoku::getNext(int &i, int &j){		//find the next blank to solve
 int a=i,b=j+1;
-	if(b>8){i++,j=0;return true;}
+	
+	if(b>8){a++;b=0;}
 	for(a=a;a<9;a++)
 	{
 		for(b=b;b<9;b++)
 		{
-			if(temp[a][b]==0){i=a,j=b;return true;}
+			if(temp[a][b]==0){i=a,j=b;return ;}
 			if(b==8){b=0;break;}
 		}
 	}
-	return false;
+
+	i=8,j=9;return;
 }
 
 void Sudoku::back(int &i, int &j){			//back to the last position
 int a=i,b=j-1;
+	
+	
 	if(b<0){a--;b=8;}
 	for(a=a;a>=0;a--)
 	{
@@ -144,7 +213,8 @@ int a=i,b=j-1;
 			if(b==0){b=8;break;}
 		}
 	}
-return ;
+	
+	i=0,j=-1;return ;
 }
 
 
@@ -157,7 +227,6 @@ int i=a,j=b,k;
 	for(k=0;k<9;k++){*(unity+k)=0;}
 	for(j=0;j<9;j++)                 //check this row
 	{	
-		cout<<"check row"<<endl;   //
 		if(arr[i][j]==0){continue;}
 		(*(unity+arr[i][j]-1))++;
 		if((*(unity+arr[i][j]-1))>1)
@@ -168,7 +237,6 @@ int i=a,j=b,k;
 	for(k=0;k<9;k++){*(unity+k)=0;}
 	for(i=0,j=b;i<9;i++)			//check this column
 	{
-		cout<<"check column"<<endl; //
 		if(arr[i][j]==0){continue;}
 		(*(unity+arr[i][j]-1))++;
 		if((*(unity+arr[i][j]-1))>1)
@@ -185,7 +253,6 @@ int i=a,j=b,k;
 			{
 				for(j=0;j<3;j++)
 				{
-					cout<<"check cell"<<endl; //
 					if(arr[i][j]==0){continue;}
 					(*(unity+arr[i][j]-1))++;
 					if((*(unity+arr[i][j]-1))>1)
@@ -226,7 +293,7 @@ int i=a,j=b,k;
 	{
 		if(j>=0&&j<3)				//in the block 2-1
 		{
-			for(i=0;i<3;i++)
+			for(i=3;i<6;i++)
 			{
 				for(j=0;j<3;j++)
 				{
@@ -240,7 +307,7 @@ int i=a,j=b,k;
 
 		else if(j>=3&&j<6)			//in the block 2-2
 		{
-			for(i=0;i<3;i++)
+			for(i=3;i<6;i++)
 			{
 				for(j=3;j<6;j++)
 				{
@@ -254,7 +321,7 @@ int i=a,j=b,k;
 
 		else if(j>=6&&j<9)			//in the block 2-3
 		{
-			for(i=0;i<3;i++)
+			for(i=3;i<6;i++)
 			{
 				for(j=6;j<9;j++)
 				{
@@ -272,7 +339,7 @@ int i=a,j=b,k;
 	{
 		if(j>=0&&j<3)				//in the block 3-1
 		{
-			for(i=0;i<3;i++)
+			for(i=6;i<9;i++)
 			{
 				for(j=0;j<3;j++)
 				{
@@ -286,7 +353,7 @@ int i=a,j=b,k;
 
 		else if(j>=3&&j<6)			//in the block 3-2
 		{
-			for(i=0;i<3;i++)
+			for(i=6;i<9;i++)
 			{
 				for(j=3;j<6;j++)
 				{
@@ -300,7 +367,7 @@ int i=a,j=b,k;
 
 		else if(j>=6&&j<9)			//in the block 3-3
 		{
-			for(i=0;i<3;i++)
+			for(i=6;i<9;i++)
 			{
 				for(j=6;j<9;j++)
 				{
@@ -315,14 +382,17 @@ int i=a,j=b,k;
 	}
 
 return true;
-/*
+}
+bool Sudoku::Validable(){
+int i,j,k;
 	for(i=0;i<9;i++)		//check rows
 	{	
 		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(j=0;j<9;j++)
 		{
-			(*(unity+arr[i][j]-1))++;
-			if((*(unity+arr[i][j]-1))!=1)
+			if(map[i][j]==0){continue;}
+			(*(unity+map[i][j]-1))++;
+			if((*(unity+map[i][j]-1))!=1)
 				return false;
 		}
 	}
@@ -332,85 +402,127 @@ return true;
 		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(i=0;i<9;i++)
 		{
-			(*(unity+arr[i][j]-1))++;
-			if((*(unity+arr[i][j]-1))!=1)
+			if(map[i][j]==0){continue;}
+			(*(unity+map[i][j]-1))++;
+			if((*(unity+map[i][j]-1))!=1)
 				return false;
 		}
 	}
 	
-	for(i=0;i<3;i++)		//check cells
+	for(k=0;k<9;k++){*(unity+k)=0;}  //check block 1-1
+	for(i=0;i<3;i++)		
 	{	
-		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(j=0;j<3;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 		}
+	}
+
+	for(k=0;k<9;k++){*(unity+k)=0;}	 //check block 1-2
+	for(i=0;i<3;i++)
+	{
 		for(j=3;j<6;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 	    }
+	}
+
+	for(k=0;k<9;k++){*(unity+k)=0;}
+	for(i=0;i<3;i++)
+	{
+		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(j=6;j<9;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 		}
 	}
 
+	for(k=0;k<9;k++){*(unity+k)=0;}
 	for(i=3;i<6;i++)
 	{	
-		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(j=0;j<3;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 		}
+	}
+	
+	for(k=0;k<9;k++){*(unity+k)=0;}
+	for(i=3;i<6;i++)
+	{
 		for(j=3;j<6;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 	    }
+	}
+
+	for(k=0;k<9;k++){*(unity+k)=0;}
+	for(i=3;i<6;i++)
+	{
 		for(j=6;j<9;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 		}
 	}
 
+	for(k=0;k<9;k++){*(unity+k)=0;}
 	for(i=6;i<9;i++)
 	{	
-		for(k=0;k<9;k++){*(unity+k)=0;}
 		for(j=0;j<3;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 		}
+	}
+
+	for(k=0;k<9;k++){*(unity+k)=0;}
+	for(i=6;i<9;i++)
+	{
 		for(j=3;j<6;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 	    }
+	}	
+
+	for(k=0;k<9;k++){*(unity+k)=0;}
+	for(i=6;i<9;i++)
+	{
 		for(j=6;j<9;j++)
 		{
-				(*(unity+arr[i][j]-1))++;
-				if(*(unity+arr[i][j]-1)!=1)
+				if(map[i][j]==0){continue;}
+				(*(unity+map[i][j]-1))++;
+				if(*(unity+map[i][j]-1)!=1)
 					return false;
 
 		}
 	}
-*/
+return true;
 }
+

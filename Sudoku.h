@@ -16,9 +16,10 @@ class Sudoku{
 	private:
 		int map[sudokuSize][sudokuSize];
 		bool checkUnity(int *unity, int a, int b);
+		bool Validable();
 		void back(int &i, int &j);
 		void getFirst(int &i, int &j);
-		bool getNext(int &i, int &j);
+		void getNext(int &i, int &j);
 		int arr[9][9];
 		int unity[9];
 		int temp[9][9];
